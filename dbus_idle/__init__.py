@@ -236,9 +236,10 @@ class WindowsIdleMonitor(IdleMonitor):
         self.win32api = win32api
 
     def get_dbus_idle(self) -> float:
-        current_tick = self.win32api.GetTickCount()
         last_tick = self.win32api.GetLastInputInfo()
-        return current_tick - last_tick
+        current_tick = self.win32api.GetTickCount()
+        # Handle wraparound
+        return current_tick - last_tick + (2**32 if current_tick < last_tick else 0)
 
     class IORegIdleMonitor(IdleMonitor):
         """
